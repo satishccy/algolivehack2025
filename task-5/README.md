@@ -210,7 +210,7 @@ const tokenizerContract = new TokenizerContractFactory({
 ![Airdrop Interface](../readme-images/task5-1.png)
 
 ## 🌐 Live Demo
-[![Live Demo](../readme-images/task5-1.png)](../readme-images/task5-demo.mp4)
+[![Live Demo](../readme-images/task5-1.png)](https://youtu.be/o8VIUp4Uvuc)
 
 ### Local Development
 The application runs locally at `http://localhost:5173` when using the development server.
