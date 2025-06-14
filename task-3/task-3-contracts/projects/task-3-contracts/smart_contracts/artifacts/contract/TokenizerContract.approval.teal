@@ -1,0 +1,207 @@
+#pragma version 10
+#pragma typetrack false
+
+// smart_contracts.contract.contract.TokenizerContract.__algopy_entrypoint_with_init() -> uint64:
+main:
+    intcblock 0 1
+    bytecblock "admin" "asa_id"
+    txn ApplicationID
+    bnz main_after_if_else@2
+    // smart_contracts/contract/contract.py:6
+    // self.admin = GlobalState(Txn.sender)
+    bytec_0 // "admin"
+    txn Sender
+    app_global_put
+
+main_after_if_else@2:
+    // smart_contracts/contract/contract.py:4
+    // class TokenizerContract(ARC4Contract):
+    txn NumAppArgs
+    bz main_bare_routing@8
+    pushbytess 0x24d4305d 0xbba3da8b 0x2483968b // method "modify_asa(asset)void", method "modify_admin(account)void", method "verified_airdrop(uint64,account)void"
+    txna ApplicationArgs 0
+    match main_modify_asa_route@5 main_modify_admin_route@6 main_verified_airdrop_route@7
+
+main_after_if_else@10:
+    // smart_contracts/contract/contract.py:4
+    // class TokenizerContract(ARC4Contract):
+    intc_0 // 0
+    return
+
+main_verified_airdrop_route@7:
+    // smart_contracts/contract/contract.py:19
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/contract/contract.py:4
+    // class TokenizerContract(ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txna ApplicationArgs 2
+    btoi
+    txnas Accounts
+    // smart_contracts/contract/contract.py:19
+    // @abimethod()
+    callsub verified_airdrop
+    intc_1 // 1
+    return
+
+main_modify_admin_route@6:
+    // smart_contracts/contract/contract.py:14
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/contract/contract.py:4
+    // class TokenizerContract(ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txnas Accounts
+    // smart_contracts/contract/contract.py:14
+    // @abimethod()
+    callsub modify_admin
+    intc_1 // 1
+    return
+
+main_modify_asa_route@5:
+    // smart_contracts/contract/contract.py:9
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/contract/contract.py:4
+    // class TokenizerContract(ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txnas Assets
+    // smart_contracts/contract/contract.py:9
+    // @abimethod()
+    callsub modify_asa
+    intc_1 // 1
+    return
+
+main_bare_routing@8:
+    // smart_contracts/contract/contract.py:4
+    // class TokenizerContract(ARC4Contract):
+    txn OnCompletion
+    bnz main_after_if_else@10
+    txn ApplicationID
+    !
+    assert // can only call when creating
+    intc_1 // 1
+    return
+
+
+// smart_contracts.contract.contract.TokenizerContract.modify_asa(asa_id: uint64) -> void:
+modify_asa:
+    // smart_contracts/contract/contract.py:9-10
+    // @abimethod()
+    // def modify_asa(self, asa_id: Asset) -> None:
+    proto 1 0
+    // smart_contracts/contract/contract.py:11
+    // assert Txn.sender == self.admin.value
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "admin"
+    app_global_get_ex
+    assert // check self.admin exists
+    ==
+    assert
+    // smart_contracts/contract/contract.py:12
+    // self.asa_id.value = asa_id
+    bytec_1 // "asa_id"
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts.contract.contract.TokenizerContract.modify_admin(admin: bytes) -> void:
+modify_admin:
+    // smart_contracts/contract/contract.py:14-15
+    // @abimethod()
+    // def modify_admin(self, admin: Account) -> None:
+    proto 1 0
+    // smart_contracts/contract/contract.py:16
+    // assert Txn.sender == self.admin.value
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "admin"
+    app_global_get_ex
+    assert // check self.admin exists
+    ==
+    assert
+    // smart_contracts/contract/contract.py:17
+    // self.admin.value = admin
+    bytec_0 // "admin"
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts.contract.contract.TokenizerContract.verified_airdrop(amount: uint64, recipient: bytes) -> void:
+verified_airdrop:
+    // smart_contracts/contract/contract.py:19-20
+    // @abimethod()
+    // def verified_airdrop(self,amount: UInt64, recipient: Account) -> None:
+    proto 2 0
+    // smart_contracts/contract/contract.py:21
+    // assert Txn.sender == self.admin.value, "Only admin can airdrop"
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "admin"
+    app_global_get_ex
+    assert // check self.admin exists
+    ==
+    assert // Only admin can airdrop
+    // smart_contracts/contract/contract.py:23-29
+    // itxn.AssetTransfer(
+    //     asset_amount=amount,
+    //     asset_receiver=recipient,
+    //     asset_sender=self.asa_id.value.reserve,
+    //     sender=Global.current_application_address,
+    //     xfer_asset=self.asa_id.value,
+    // ).submit()
+    itxn_begin
+    // smart_contracts/contract/contract.py:26
+    // asset_sender=self.asa_id.value.reserve,
+    intc_0 // 0
+    bytec_1 // "asa_id"
+    app_global_get_ex
+    assert // check self.asa_id exists
+    dup
+    asset_params_get AssetReserve
+    assert // asset exists
+    // smart_contracts/contract/contract.py:27
+    // sender=Global.current_application_address,
+    global CurrentApplicationAddress
+    uncover 2
+    itxn_field XferAsset
+    itxn_field Sender
+    itxn_field AssetSender
+    frame_dig -1
+    itxn_field AssetReceiver
+    frame_dig -2
+    itxn_field AssetAmount
+    // smart_contracts/contract/contract.py:23
+    // itxn.AssetTransfer(
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    // smart_contracts/contract/contract.py:23-29
+    // itxn.AssetTransfer(
+    //     asset_amount=amount,
+    //     asset_receiver=recipient,
+    //     asset_sender=self.asa_id.value.reserve,
+    //     sender=Global.current_application_address,
+    //     xfer_asset=self.asa_id.value,
+    // ).submit()
+    itxn_submit
+    retsub

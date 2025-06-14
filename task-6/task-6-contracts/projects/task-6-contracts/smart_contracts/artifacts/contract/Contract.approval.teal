@@ -1,0 +1,218 @@
+#pragma version 10
+#pragma typetrack false
+
+// smart_contracts.contract.contract.Contract.__algopy_entrypoint_with_init() -> uint64:
+main:
+    intcblock 0 1
+    bytecblock "badge_owners" "assetId" "amount_required" "badge_name" "badge_unit" "badge_metadata_url"
+    // smart_contracts/contract/contract.py:4
+    // class Contract(ARC4Contract):
+    txn NumAppArgs
+    bz main_after_if_else@8
+    pushbytess 0x0e796c99 0xf6450046 0xd18f39a7 // method "create(asset,string,string,string,uint64)void", method "mint_badge()uint64", method "claim_badge()void"
+    txna ApplicationArgs 0
+    match main_create_route@5 main_mint_badge_route@6 main_claim_badge_route@7
+
+main_after_if_else@8:
+    // smart_contracts/contract/contract.py:4
+    // class Contract(ARC4Contract):
+    intc_0 // 0
+    return
+
+main_claim_badge_route@7:
+    // smart_contracts/contract/contract.py:29
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub claim_badge
+    intc_1 // 1
+    return
+
+main_mint_badge_route@6:
+    // smart_contracts/contract/contract.py:21
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub mint_badge
+    itob
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_create_route@5:
+    // smart_contracts/contract/contract.py:13
+    // @abimethod(create="require")
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    !
+    assert // can only call when creating
+    // smart_contracts/contract/contract.py:4
+    // class Contract(ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txnas Assets
+    txna ApplicationArgs 2
+    extract 2 0
+    txna ApplicationArgs 3
+    extract 2 0
+    txna ApplicationArgs 4
+    extract 2 0
+    txna ApplicationArgs 5
+    btoi
+    // smart_contracts/contract/contract.py:13
+    // @abimethod(create="require")
+    callsub create
+    intc_1 // 1
+    return
+
+
+// smart_contracts.contract.contract.Contract.create(asset_id: uint64, name: bytes, unit: bytes, metadata_url: bytes, amount_required: uint64) -> void:
+create:
+    // smart_contracts/contract/contract.py:13-14
+    // @abimethod(create="require")
+    // def create(self,asset_id: Asset, name: String, unit: String, metadata_url: String, amount_required: UInt64) -> None:
+    proto 5 0
+    // smart_contracts/contract/contract.py:15
+    // self.assetId.value = asset_id
+    bytec_1 // "assetId"
+    frame_dig -5
+    app_global_put
+    // smart_contracts/contract/contract.py:16
+    // self.amount_required.value = amount_required
+    bytec_2 // "amount_required"
+    frame_dig -1
+    app_global_put
+    // smart_contracts/contract/contract.py:17
+    // self.badge_name.value = name
+    bytec_3 // "badge_name"
+    frame_dig -4
+    app_global_put
+    // smart_contracts/contract/contract.py:18
+    // self.badge_unit.value = unit
+    bytec 4 // "badge_unit"
+    frame_dig -3
+    app_global_put
+    // smart_contracts/contract/contract.py:19
+    // self.badge_metadata_url.value = metadata_url
+    bytec 5 // "badge_metadata_url"
+    frame_dig -2
+    app_global_put
+    retsub
+
+
+// smart_contracts.contract.contract.Contract.mint_badge() -> uint64:
+mint_badge:
+    // smart_contracts/contract/contract.py:23
+    // assert self.assetId.value.balance(Txn.sender) >= self.amount_required.value
+    txn Sender
+    intc_0 // 0
+    bytec_1 // "assetId"
+    app_global_get_ex
+    assert // check self.assetId exists
+    asset_holding_get AssetBalance
+    assert // account opted into asset
+    intc_0 // 0
+    bytec_2 // "amount_required"
+    app_global_get_ex
+    assert // check self.amount_required exists
+    >=
+    assert
+    // smart_contracts/contract/contract.py:25
+    // result = itxn.AssetConfig(total=1,decimals=0,unit_name=self.badge_unit.value,asset_name=self.badge_name.value,url=self.badge_metadata_url.value,freeze=Global.current_application_address,reserve=Global.current_application_address,manager=Global.current_application_address,clawback=Global.current_application_address,default_frozen=False).submit()
+    itxn_begin
+    intc_0 // 0
+    bytec 4 // "badge_unit"
+    app_global_get_ex
+    assert // check self.badge_unit exists
+    intc_0 // 0
+    bytec_3 // "badge_name"
+    app_global_get_ex
+    assert // check self.badge_name exists
+    intc_0 // 0
+    bytec 5 // "badge_metadata_url"
+    app_global_get_ex
+    assert // check self.badge_metadata_url exists
+    global CurrentApplicationAddress
+    dupn 3
+    intc_0 // 0
+    itxn_field ConfigAssetDefaultFrozen
+    itxn_field ConfigAssetClawback
+    itxn_field ConfigAssetManager
+    itxn_field ConfigAssetReserve
+    itxn_field ConfigAssetFreeze
+    itxn_field ConfigAssetURL
+    itxn_field ConfigAssetName
+    itxn_field ConfigAssetUnitName
+    intc_0 // 0
+    itxn_field ConfigAssetDecimals
+    intc_1 // 1
+    itxn_field ConfigAssetTotal
+    pushint 3 // acfg
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    itxn CreatedAssetID
+    // smart_contracts/contract/contract.py:26
+    // self.badge_owners[Address(Txn.sender)] = result.created_asset
+    bytec_0 // "badge_owners"
+    txn Sender
+    concat
+    dig 1
+    itob
+    box_put
+    // smart_contracts/contract/contract.py:27
+    // return result.created_asset
+    retsub
+
+
+// smart_contracts.contract.contract.Contract.claim_badge() -> void:
+claim_badge:
+    // smart_contracts/contract/contract.py:31
+    // assert Address(Txn.sender) in self.badge_owners
+    bytec_0 // "badge_owners"
+    txn Sender
+    concat
+    box_len
+    bury 1
+    assert
+    // smart_contracts/contract/contract.py:32
+    // asset_id = self.badge_owners[Address(Txn.sender)]
+    bytec_0 // "badge_owners"
+    txn Sender
+    concat
+    box_get
+    assert // check self.badge_owners entry exists
+    btoi
+    // smart_contracts/contract/contract.py:33
+    // itxn.AssetTransfer(xfer_asset=asset_id, asset_amount=1, asset_receiver=Txn.sender).submit()
+    itxn_begin
+    txn Sender
+    itxn_field AssetReceiver
+    intc_1 // 1
+    itxn_field AssetAmount
+    itxn_field XferAsset
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/contract/contract.py:34
+    // del self.badge_owners[Address(Txn.sender)]
+    bytec_0 // "badge_owners"
+    txn Sender
+    concat
+    box_del
+    pop
+    retsub

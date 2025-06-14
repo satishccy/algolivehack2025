@@ -1,0 +1,31 @@
+{
+  "name": "task-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "task-1": "ts-node task-1/main.ts",
+    "task-2": "ts-node task-2/main.ts",
+    "task-3": "ts-node task-3/main.ts",
+    "task-4": "ts-node task-4/main.ts",
+    "task-5": "cd .\\task-5\\projects\\task-5\\ && npm run dev",
+    "task-6": "ts-node task-6/main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "^9.1.0",
+    "algosdk": "^3.3.1",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "form-data": "^4.0.3",
+    "mime-types": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^24.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
