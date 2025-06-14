@@ -8,7 +8,7 @@
     "task-2": "ts-node task-2/main.ts",
     "task-3": "ts-node task-3/main.ts",
     "task-4": "ts-node task-4/main.ts",
-    "task-5": "cd .\\task-5\\projects\\task-5\\ && npm run dev",
+    "task-5": "cd .\\task-5\\projects\\task-5\\ && npm install && npm run dev",
     "task-6": "ts-node task-6/main.ts"
   },
   "keywords": [],
